@@ -1,0 +1,4 @@
+package xyz.tryfle.capeinjector.again
+
+object Agent {
+}
