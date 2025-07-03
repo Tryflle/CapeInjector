@@ -1,4 +1,4 @@
-tiny	2	0	official	named
+tiny	2	0	srg	yarn
 c	net/minecraft/util/EnumChatFormatting	net/minecraft/util/Formatting
 	m	(I)Lnet/minecraft/util/EnumChatFormatting;	func_175744_a	byColorIndex
 		p	0		colorIndex

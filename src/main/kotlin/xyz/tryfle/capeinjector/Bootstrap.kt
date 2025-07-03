@@ -33,6 +33,7 @@ object Bootstrap {
     }
 
     fun init() {
+        println("[CI] Initializing...")
         if (initialized) return
 
         initialized = true
@@ -41,16 +42,14 @@ object Bootstrap {
             Detector.detectClient()
         } catch (ex: Throwable) {
             ex.printStackTrace()
-
             try {
                 exitProcess(1)
             } catch (_: Throwable) {
-                println("what?")
+                println("[CI] what?")
             }
         }
-
         if (!isSupported(client as String)) {
-            println("$client is not currently supported, exiting so we don't crash")
+            println("[CI] $client is not currently supported, exiting so we don't crash")
 
             return
         }
@@ -62,7 +61,8 @@ object Bootstrap {
                 ?.classLoader ?: return
         val agentPath = Bootstrap::class.java.getProtectionDomain().codeSource.location.toURI().toURL()
 
-//        if (client == "Badlion") {
+//        if (client == "Baldlion") {
+//            println("[CI] Why... also fun fact I internally call badlion baldlion.")
 //        }
 
         if (client == "Lunar" || client == "Forge") {
@@ -72,11 +72,9 @@ object Bootstrap {
                     .getDeclaredMethod("addURL", URL::class.java)
                     .also { it.isAccessible = true }
 
-            println("Adding agent to class loader: ${targetLoader::class.java.name}")
-
             addUrl.invoke(targetLoader, agentPath)
 
-            println("Added agent to class loader: ${targetLoader::class.java.name}")
+            println("[CI] Added agent to class loader: ${targetLoader::class.java.name}")
 
             loadAgent(targetLoader)
         }
@@ -93,6 +91,6 @@ object Bootstrap {
         URLClassLoader::class.java
             .getDeclaredMethod("addURL", URL::class.java)
             .also { it.isAccessible = true }.invoke(loader, jar)
-        println("[CI] loaded. we got here. clap for me.")
+        println("[CI] Loaded agent into class loader.")
     }
 }

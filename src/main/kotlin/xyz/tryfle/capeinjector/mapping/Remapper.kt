@@ -6,26 +6,44 @@ class Remapper(
     private val mappingTree: MemoryMappingTree
 ) : Remapper() {
 
-    private val srcNs = mappingTree.getNamespaceId("official")
-    private val dstNs = mappingTree.getNamespaceId("named")
+    private val srcNs = mappingTree.getNamespaceId("srg")
+    private val dstNs = mappingTree.getNamespaceId("yarn")
 
     override fun map(internalName: String): String {
-        return mappingTree.mapClassName(internalName, srcNs, dstNs)
+        // Use null-safe operation and fallback to original name
+        return mappingTree.mapClassName(internalName, srcNs, dstNs) ?: internalName
     }
 
     override fun mapMethodName(owner: String, name: String, descriptor: String): String {
-        val method = mappingTree.getMethod(owner, name, descriptor, srcNs) ?: return name
+        val mappedOwner = map(owner) // Make sure to map the owner class name first
+        val method = mappingTree.getMethod(mappedOwner, name, descriptor, srcNs) ?: return name
         return method.getName(dstNs) ?: name
     }
 
     override fun mapFieldName(owner: String, name: String, descriptor: String): String {
-        val field = mappingTree.getField(owner, name, descriptor, srcNs) ?: return name
+        val mappedOwner = map(owner) // Make sure to map the owner class name first
+        val field = mappingTree.getField(mappedOwner, name, descriptor, srcNs) ?: return name
         return field.getName(dstNs) ?: name
+    }
+
+    override fun mapDesc(descriptor: String): String {
+        // This handles method descriptors and field descriptors
+        return super.mapDesc(descriptor)
     }
 
     companion object {
         fun fromTinyResource(resourcePath: String = "mappings/1_8/srg-yarn.tiny"): Remapper {
             val tree = MappingSet.loadTinyMappings(resourcePath)
+
+            val srcNs = tree.getNamespaceId("srg")
+            val dstNs = tree.getNamespaceId("yarn")
+
+            println("[CI] Loaded mappings from $resourcePath:")
+            tree.classes.take(5).forEach { classNode ->
+                println("[CI] Class: ${classNode.getName(srcNs)} -> ${classNode.getName(dstNs)}")
+            }
+
+            println("srcNs = $srcNs, dstNs = $dstNs")
             return Remapper(tree as MemoryMappingTree)
         }
     }

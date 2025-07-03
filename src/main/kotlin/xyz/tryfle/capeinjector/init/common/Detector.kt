@@ -28,17 +28,19 @@ object Detector {
             },
             { Class.forName("net.badlion.client.Wrapper"); "Baldlion" },
             { Class.forName("net.fabricmc.loader.impl.launch.knot.KnotClient"); "Fabric" },
-            { Class.forName("net.minecraftforge.fml.loading.FMLLoader"); "Forge" },
+            { Class.forName("net.minecraft.launchwrapper.Launch"); "Forge" },
             { Class.forName("net.minecraft.client.main.Main"); "Vanilla" }
         )
 
 
 
     fun tryAll(vararg checks: () -> String): String {
-        for (check in checks) {
+        for ((i, check) in checks.withIndex()) {
             try {
-                return check()
-            } catch (_: Throwable) {
+                val result = check()
+//                println("[CI] Client detection succeeded: $result")
+                return result
+            } catch (t: Throwable) {
             }
         }
         return "Unknown"
