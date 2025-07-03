@@ -10,25 +10,17 @@ class Remapper(
     private val dstNs = mappingTree.getNamespaceId("yarn")
 
     override fun map(internalName: String): String {
-        // Use null-safe operation and fallback to original name
-        return mappingTree.mapClassName(internalName, srcNs, dstNs) ?: internalName
+        return mappingTree.mapClassName(internalName, srcNs, dstNs)
     }
 
     override fun mapMethodName(owner: String, name: String, descriptor: String): String {
-        val mappedOwner = map(owner) // Make sure to map the owner class name first
-        val method = mappingTree.getMethod(mappedOwner, name, descriptor, srcNs) ?: return name
+        val method = mappingTree.getMethod(owner, name, descriptor, srcNs) ?: return name
         return method.getName(dstNs) ?: name
     }
 
     override fun mapFieldName(owner: String, name: String, descriptor: String): String {
-        val mappedOwner = map(owner) // Make sure to map the owner class name first
-        val field = mappingTree.getField(mappedOwner, name, descriptor, srcNs) ?: return name
+        val field = mappingTree.getField(owner, name, descriptor, srcNs) ?: return name
         return field.getName(dstNs) ?: name
-    }
-
-    override fun mapDesc(descriptor: String): String {
-        // This handles method descriptors and field descriptors
-        return super.mapDesc(descriptor)
     }
 
     companion object {
