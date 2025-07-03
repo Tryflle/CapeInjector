@@ -1,8 +1,7 @@
 package xyz.tryfle.capeinjector.init.common
 
-object Initializer {
-    @JvmStatic
-    fun bootstrap() {
+import java.lang.instrument.Instrumentation
+
+fun bootstrap(inst: Instrumentation, client: String) {
         println("[CI] HELLO CHAT")
-    }
 }

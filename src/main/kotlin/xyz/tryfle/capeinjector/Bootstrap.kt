@@ -82,10 +82,10 @@ object Bootstrap {
         }
 
         minecraftLoader
-            .loadClass("xyz.tryfle.capeinjector.init.common.Initializer")
+            .loadClass("xyz.tryfle.capeinjector.init.common.InitializerKt")
             .declaredMethods
             .find { it.name == "bootstrap" }!!
-            .invoke(null, inst, agentPath, client)
+            .invoke(null, inst, client)
     }
 
     fun loadAgent(loader: ClassLoader?) {
